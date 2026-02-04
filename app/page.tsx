@@ -1,17 +1,22 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, FormEvent } from "react";
+
+interface Message {
+  role: "user" | "bot";
+  text: string;
+}
 
 const DEFAULT_BOT_MESSAGE =
   "Hi! I'm Yasin's bot. How can I help you today?";
 
 export default function Home() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     { role: "bot", text: DEFAULT_BOT_MESSAGE },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const chatEndRef = useRef(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -21,7 +26,7 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;
