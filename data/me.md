@@ -112,6 +112,18 @@ Loyalty platform providing smart discounts and exclusive offers for cardholders.
 - Deployed applications on DigitalOcean VPS.
 - Configured Linux servers, Docker containers, and SSL (Let's Encrypt).
 
+### About Me AI — Personal AI Chatbot
+A personal AI-powered chatbot trained to answer questions exclusively about me. It serves as an interactive alternative to a traditional resume.
+
+**Link:** https://about-me-ai.yasinarafat.dev
+
+**Tech:** LangChain, Next.js
+
+**Responsibilities:**
+- Built safeguards to restrict model outputs to first-party personal data only.
+- Handled conversation state to support contextual follow-up questions.
+- Optimized prompt design and context handling for accurate and concise replies.
+
 ---
 
 ## Experience
