@@ -1,9 +1,9 @@
 # Yasin Arafat
 
-📞 +8801675838397  
-✉️ hello@yasinarafat.dev  
-🌐 https://yasinarafat.dev  
-📍 Dhaka, Bangladesh  
+📞 +8801675838397
+✉️ hello@yasinarafat.dev
+🌐 https://yasinarafat.dev
+📍 Dhaka, Bangladesh
 
 ---
 

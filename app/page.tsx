@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, FormEvent } from "react";
 
 interface Message {
-  role: "user" | "bot";
+  role: "human" | "ai";
   text: string;
 }
 
@@ -12,7 +12,7 @@ const DEFAULT_BOT_MESSAGE =
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: DEFAULT_BOT_MESSAGE },
+    { role: "ai", text: DEFAULT_BOT_MESSAGE },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -33,22 +33,26 @@ export default function Home() {
 
     const userMessage = trimmed;
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", text: userMessage }]);
+
+    const conversationMessages = messages.slice(1); // skip default greeting
+    const history = conversationMessages.slice(-(5 * 2)); // last 5 Q&A pairs (10 messages)
+
+    setMessages((prev) => [...prev, { role: "human", text: userMessage }]);
     setIsLoading(true);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ message: userMessage, history }),
       });
       const data = await res.json();
       const reply = res.ok ? data.reply : "Something went wrong.";
-      setMessages((prev) => [...prev, { role: "bot", text: reply }]);
+      setMessages((prev) => [...prev, { role: "ai", text: reply }]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "bot", text: "Something went wrong." },
+        { role: "ai", text: "Something went wrong." },
       ]);
     } finally {
       setIsLoading(false);
@@ -71,11 +75,11 @@ export default function Home() {
           {messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex ${msg.role === "human" ? "justify-end" : "justify-start"}`}
             >
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
-                  msg.role === "bot"
+                  msg.role === "ai"
                     ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-100"
                     : "bg-blue-600 text-white dark:bg-blue-500"
                 }`}

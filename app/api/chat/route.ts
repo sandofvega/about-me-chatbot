@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chat } from "@/lib/ai";
+import { chat, type ChatMessage } from "@/lib/ai";
 
 interface ChatRequest {
   message: string;
+  history?: ChatMessage[];
 }
 
 interface ChatResponse {
@@ -12,7 +13,7 @@ interface ChatResponse {
 export async function POST(request: NextRequest): Promise<NextResponse<ChatResponse>> {
   try {
     const body: ChatRequest = await request.json();
-    const reply = await chat(body.message);
+    const reply = await chat(body.message, body.history);
 
     return NextResponse.json({ reply });
   } catch {
