@@ -10,16 +10,30 @@ interface ChatResponse {
   reply: string;
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse<ChatResponse>> {
+export async function POST(request: Request) {
   try {
-    const body: ChatRequest = await request.json();
-    const reply = await chat(body.message, body.history);
+    const body = await request.json()
 
-    return NextResponse.json({ reply });
-  } catch {
-    return NextResponse.json(
-      { reply: "Something went wrong." },
+    const response = await fetch(`${process.env.AI_HOST}/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body),
+    })
+
+    if (!response.ok) {
+      throw new Error(`External API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return Response.json(data)
+  } catch (error) {
+    console.error("POST error:", error)
+    return Response.json(
+      { error: "Something went wrong." },
       { status: 500 }
-    );
+    )
   }
 }
