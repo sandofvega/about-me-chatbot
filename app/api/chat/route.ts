@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { chat, type ChatMessage } from "@/lib/ai";
+interface ChatMessage {
+  role: "human" | "ai";
+  text: string;
+}
 
 interface ChatRequest {
   message: string;
@@ -10,30 +12,43 @@ interface ChatResponse {
   reply: string;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
-    const body = await request.json()
-
-    const response = await fetch(`${process.env.AI_HOST}/chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body),
-    })
-
-    if (!response.ok) {
-      throw new Error(`External API error: ${response.status}`)
+    if (!process.env.AI_HOST) {
+      throw new Error("AI_HOST environment variable is not defined");
     }
 
-    const data = await response.json()
+    const body: ChatRequest = await request.json();
 
-    return Response.json(data)
-  } catch (error) {
-    console.error("POST error:", error)
+    const externalResponse = await fetch(
+      `${process.env.AI_HOST}/chat`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (!externalResponse.ok) {
+      throw new Error(
+        `External API error: ${externalResponse.status} ${externalResponse.statusText}`
+      );
+    }
+
+    const data: ChatResponse = await externalResponse.json();
+
+    return Response.json(data);
+  } catch (error: unknown) {
+    console.error("POST error:", error);
+
+    const message =
+      error instanceof Error ? error.message : "Unexpected error";
+
     return Response.json(
-      { error: "Something went wrong." },
+      { error: message },
       { status: 500 }
-    )
+    );
   }
 }
