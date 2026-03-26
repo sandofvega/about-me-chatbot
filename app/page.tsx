@@ -7,12 +7,15 @@ interface Message {
   text: string;
 }
 
-const DEFAULT_BOT_MESSAGE =
-  "Hi! I'm Yasin's bot. How can I help you today?";
+const MAX_HISTORY_PAIRS = 10; // max Q&A pairs to keep in history (10 messages)
+
+const DEFAULT_MESSAGE = `Hey! You're chatting with Virtual Yasin.
+Trained to answer, think, and behave like Yasin.
+Feel free to ask anything.`;
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "ai", text: DEFAULT_BOT_MESSAGE },
+    { role: "ai", text: DEFAULT_MESSAGE },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +38,7 @@ export default function Home() {
     setInput("");
 
     const conversationMessages = messages.slice(1); // skip default greeting
-    const history = conversationMessages.slice(-(5 * 2)); // last 5 Q&A pairs (10 messages)
+    const history = conversationMessages.slice(-(MAX_HISTORY_PAIRS * 2));
 
     setMessages((prev) => [...prev, { role: "human", text: userMessage }]);
     setIsLoading(true);
@@ -63,10 +66,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-zinc-50 font-sans dark:bg-zinc-950">
       {/* Header */}
       <header className="shrink-0 bg-linear-to-r from-blue-600 to-blue-400 px-4 py-4 text-white dark:from-blue-700 dark:to-blue-500">
-        <h1 className="text-xl font-bold">About Me Bot</h1>
-        <p className="text-sm text-blue-100 dark:text-blue-200">
-          Ask me anything about Yasin
-        </p>
+        <h1 className="text-xl font-bold">Yasin's AI Twin</h1>
       </header>
 
       {/* Scrollable chat area */}
@@ -78,7 +78,7 @@ export default function Home() {
               className={`flex ${msg.role === "human" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
+                className={`max-w-[85%] rounded-2xl px-4 py-2.5 whitespace-pre-line ${
                   msg.role === "ai"
                     ? "bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-100"
                     : "bg-blue-600 text-white dark:bg-blue-500"
